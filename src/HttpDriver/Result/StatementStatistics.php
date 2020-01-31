@@ -85,13 +85,18 @@ class StatementStatistics implements StatementStatisticsInterface
             'indexes_added', 'indexes_removed', 'constraints_added', 'constraints_removed', 'relationship_deleted',
             'relationships_created',
         ];
-
+        $forget_keys = [
+            'contains_system_updates', 'system_updates',
+        ];
         foreach ($statistics as $key => $value) {
             if (!in_array($key, $keys, true)) {
-                throw new \InvalidArgumentException(sprintf('Key %s is invalid in statement statistics', $key));
+                if (!in_array($key, $forget_keys, true)) {
+                    throw new \InvalidArgumentException(sprintf('Key %s is invalid in statement statistics', $key));
+                }
+            } else {
+                $k = $this->toCamelCase($key);
+                $this->$k = $value;
             }
-            $k = $this->toCamelCase($key);
-            $this->$k = $value;
         }
     }
 
